@@ -44,7 +44,6 @@ class TestSudokuBoardHelper(unittest.TestCase):
     self.helper = SudokuBoardHelper(board)
 
   def test_operation(self):
-    self.assertFalse(self.helper.is_complete())
     self.assertEqual({e for e in xrange(1, 10)}, self.helper.get_cell_available_elements(0, 0))
 
     self.helper.set_cell(0, 0, 1)
@@ -68,16 +67,12 @@ class TestSudokuBoardHelper(unittest.TestCase):
   def test_sequential_coverage(self):
     for r in xrange(0, 9):
       for c in xrange(0, 9):
-        self.assertFalse(self.helper.is_complete())
-        self.assertTrue(self.helper.set_cell(r, c, self.VALID_BOARD[r][c]))
-    self.assertTrue(self.helper.is_complete())
+        self.helper.set_cell(r, c, self.VALID_BOARD[r][c])
 
   def test_best_cell_coverage(self):
     for i in xrange(0, 81):
-      self.assertFalse(self.helper.is_complete())
       r, c = self.helper.get_next_cell()
-      self.assertTrue(self.helper.set_cell(r, c, self.VALID_BOARD[r][c]))
-    self.assertTrue(self.helper.is_complete())
+      self.helper.set_cell(r, c, self.VALID_BOARD[r][c])
 
 
 class TestSudokuSolver(unittest.TestCase):
