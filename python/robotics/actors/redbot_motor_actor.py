@@ -36,7 +36,7 @@ class RedbotMotorActor(object):
         self.motor_controller.stop()
         self.relative_power = 0.0
 
-    def setEnginePower(self, relative_power):
+    def setPower(self, relative_power):
         if relative_power < 0:
             self._setDirectionBackward()
         else:
