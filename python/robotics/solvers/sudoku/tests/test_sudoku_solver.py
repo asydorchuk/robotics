@@ -1,8 +1,9 @@
 import unittest
 
-from sudoku_solver import SudokuBoard
-from sudoku_solver import SudokuBoardHelper
-from sudoku_solver import SudokuSolver
+from robotics.solvers.sudoku.sudoku_solver import SudokuBoard
+from robotics.solvers.sudoku.sudoku_solver import SudokuBoardHelper
+from robotics.solvers.sudoku.sudoku_solver import SudokuSolver
+
 
 class TestSudokuBoard(unittest.TestCase):
 
