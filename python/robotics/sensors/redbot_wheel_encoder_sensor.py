@@ -7,9 +7,9 @@ class RedbotWheelEncoderThread(threading.Thread):
   # TODO(asydorchuk): extract default pin ids from configuration.
   # TODO(asydorchuk): extract constants to the configuration file.
 
-  _SENSOR_VALUE_DEFAULT = 250.0
-  _SENSOR_THRESHOLD_LOW = 100.0
-  _SENSOR_THRESHOLD_HIGH = 350.0
+  _SENSOR_VALUE_DEFAULT = 500.0
+  _SENSOR_THRESHOLD_LOW = 200.0
+  _SENSOR_THRESHOLD_HIGH = 700.0
   _SENSOR_STATE_UNDEF = 0
   _SENSOR_STATE_LOW = 1
   _SENSOR_STATE_HIGH = 2
