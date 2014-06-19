@@ -1,7 +1,7 @@
 import spidev
 
 
-class MCP3008SpiReader(object):
+class MCP3008SpiInterface(object):
 
   def __init__(self, device_id):
     self.device = spidev.SpiDev()

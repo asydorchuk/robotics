@@ -1,7 +1,5 @@
 import threading
 
-from mcp3008_spi_reader import MCP3008SpiReader
-
 
 class RedbotWheelEncoderThread(threading.Thread):
   # TODO(asydorchuk): extract default pin ids from configuration.
@@ -21,7 +19,7 @@ class RedbotWheelEncoderThread(threading.Thread):
       return self._SENSOR_STATE_HIGH
     return self._SENSOR_STATE_UNDEF
 
-  def __init__(self, ticks, spi_id = 0, lpin_id = 2, rpin_id = 1):
+  def __init__(self, spi_interface, ticks, spi_id = 0, lpin_id = 2, rpin_id = 1):
     super(RedbotWheelEncoderThread, self).__init__()
     self.daemon = True
     self.ticks = ticks
@@ -31,7 +29,7 @@ class RedbotWheelEncoderThread(threading.Thread):
     self.rpin_value = self._SENSOR_VALUE_DEFAULT
     self.lpin_state = self._SENSOR_STATE_UNDEF
     self.rpin_state = self._SENSOR_STATE_UNDEF
-    self.reader = MCP3008SpiReader(spi_id)
+    self.reader = spi_interface
 
   def run(self):
     while True:
@@ -59,11 +57,11 @@ class RedbotWheelEncoderSensor(object):
   _TICKS_PER_WHEEL_CYCLE = 32
   _METERS_PER_WHEEL_CYCLE = 0.2
 
-  def __init__(self):
+  def __init__(self, spi_interface):
     self.ticks = [0, 0, 0]
     self.ticks_to_meters_koef = \
       self._METERS_PER_WHEEL_CYCLE / self._TICKS_PER_WHEEL_CYCLE
-    worker = RedbotWheelEncoderThread(self.ticks)
+    worker = RedbotWheelEncoderThread(spi_interface, self.ticks)
     worker.start()    
 
   def getLeftWheelTicks(self):
