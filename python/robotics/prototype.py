@@ -19,7 +19,7 @@ def check_motors_and_encoders(spi):
     print 'Let\'s workout a bit'
 
     lmotor.start()
-    lmotor.setPower(0.9)
+    lmotor.setPower(0.89)
 
     rmotor.start()
     rmotor.setPower(1.0)
