@@ -19,12 +19,12 @@ def check_motors_and_encoders(spi):
     print 'Let\'s workout a bit'
 
     lmotor.start()
-    lmotor.setPower(0.2)
+    lmotor.setPower(0.9)
 
     rmotor.start()
-    rmotor.setPower(0.2)
+    rmotor.setPower(1.0)
 
-    time.sleep(1)
+    time.sleep(2.0)
 
     lmotor.stop()
     rmotor.stop()
@@ -36,9 +36,9 @@ def check_motors_and_encoders(spi):
 
 def check_distance_sensors(spi):
     print 'Checking distance sensors...'
-    fsensor = SharpIrDistanceSensor(spi, 3)
-    lsensor = SharpIrDistanceSensor(spi, 4)
-    rsensor = SharpIrDistanceSensor(spi, 5)
+    lsensor = SharpIrDistanceSensor(spi, 5)
+    fsensor = SharpIrDistanceSensor(spi, 4)
+    rsensor = SharpIrDistanceSensor(spi, 3)
 
     print 'Front sensor distance: %s' % fsensor.readDistance()
     print 'Left sensor distance: %s' % lsensor.readDistance()
