@@ -1,4 +1,12 @@
 def PIDController(object):
+    """Standard configurable PID controller.
+
+    Embeds proportional, integral and derivative terms.
+    Proportional term depends on the present error.
+    Integral term depends on the accumulation of the past error.
+    Derivative term predicts the future error, base on the current
+    rate of change.
+    """
 
     def __init__(
             self,
