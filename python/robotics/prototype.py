@@ -14,8 +14,8 @@ def check_motors_and_encoders(spi):
     rmotor = RedbotMotorActor(gpio, 11, 13, 15)
     wencoder = RedbotWheelEncoderSensor(spi)
 
-    print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelTicks()
-    print 'NUmber of right wheel ticks: %s' % wencoder.getRightWheelTicks()
+    print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelTicksTotal()
+    print 'NUmber of right wheel ticks: %s' % wencoder.getRightWheelTicksTotal()
     print 'Let\'s workout a bit'
 
     lmotor.start()
@@ -29,8 +29,8 @@ def check_motors_and_encoders(spi):
     lmotor.stop()
     rmotor.stop()
 
-    print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelTicks()
-    print 'Number of right wheel ticks: %s' % wencoder.getRightWheelTicks()
+    print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelTicksTotal()
+    print 'Number of right wheel ticks: %s' % wencoder.getRightWheelTicksTotal()
     print '\n'
 
 

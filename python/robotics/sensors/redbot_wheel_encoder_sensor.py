@@ -1,3 +1,4 @@
+import math
 import threading
 
 
@@ -55,23 +56,24 @@ class RedbotWheelEncoderSensor(object):
   # TODO(asydorchuk): move constants to the config file.
 
   _TICKS_PER_WHEEL_CYCLE = 32
-  _METERS_PER_WHEEL_CYCLE = 0.2
 
   def __init__(self, spi_interface):
     self.ticks = [0, 0, 0]
-    self.ticks_to_meters_koef = \
-      self._METERS_PER_WHEEL_CYCLE / self._TICKS_PER_WHEEL_CYCLE
+    self.ticks_to_radians_factor = math.pi / self._TICKS_PER_WHEEL_CYCLE
     worker = RedbotWheelEncoderThread(spi_interface, self.ticks)
     worker.start()    
 
-  def getLeftWheelTicks(self):
+  def getLeftWheelTicksTotal(self):
     return self.ticks[0]
 
-  def getRightWheelTicks(self):
+  def getLeftWheelRadiansTotal(self):
+    return self.ticks[0] * self.ticks_to_radians_factor
+
+  def getRightWheelTicksTotal(self):
     return self.ticks[1]
+
+  def getRightWheelRadiansTotal(self):
+    return self.ticks[1] * self.ticks_to_radians_factor
 
   def getMeasurmentsCount(self):
     return self.ticks[2]
-
-  def ticksToMeters(self, ticks):
-    return ticks * self.ticks_to_meters_koef
