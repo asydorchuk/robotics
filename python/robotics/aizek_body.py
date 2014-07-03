@@ -1,4 +1,5 @@
 import math
+import time
 
 from RPi import GPIO as gpio
 
@@ -41,12 +42,20 @@ class AizekBody(object):
         self.R = 0.032
         self.L = 0.1
 
-    def setGoal(self, x, y):
+    def setGoal(self, x, y, phi):
         self.pos_x = -x
         self.pos_y = -y
+        self.phi = -phi
 
-    def updatePosition(self):
-        lradians, rradians = self.readVelocitySensors()
+    def normalizeAngle(self, angle):
+        angle %= 2.0 * math.pi
+        if angle > math.pi:
+            angle -= 2.0 * math.pi
+        if angle < -math.pi:
+            angle += 2.0 * math.pi
+        return angle
+
+    def updatePosition(self, lradians, rradians):
         delta_lradians = lradians - self.prev_lradians
         self.prev_lradians = lradians
         if self.lmotor_power < 0.0:
@@ -60,24 +69,29 @@ class AizekBody(object):
 
         distance = self.R * 0.5 * (delta_rradians + delta_lradians)
         delta_phi = self.R / self.L * (delta_rradians - delta_lradians)
-        radius = distance / delta_phi
 
         if delta_phi > 0.0:
+            radius = abs(distance / delta_phi)
             circle_x = self.pos_x - radius * math.sin(self.phi)
             circle_y = self.pos_y + radius * math.cos(self.phi)
-            circle_phi = (11.5 * math.pi + self.phi + delta_phi) % (2.0 * math.pi)
+            circle_phi = self.normalizeAngle(1.5 * math.pi + self.phi + delta_phi)
 
             self.pos_x = circle_x + radius * math.cos(circle_phi)
             self.pos_y = circle_y + radius * math.sin(circle_phi)
-            self.phi = (12.0 * math.pi + self.phi + delta_phi) % (2.0 * math.pi)
-        else:
+            self.phi = self.normalizeAngle(self.phi + delta_phi)
+        elif delta_phi < 0.0:
+            radius = abs(distance / delta_phi)
             circle_x = self.pos_x + radius * math.sin(self.phi)
             circle_y = self.pos_y - radius * math.cos(self.phi)
-            circle_phi = (12.5 * math.pi + self.phi - delta_phi) % (2.0 * math.pi)
+            circle_phi = self.normalizeAngle(0.5 * math.pi + self.phi + delta_phi)
 
             self.pos_x = circle_x + radius * math.cos(circle_phi)
             self.pos_y = circle_y + radius * math.sin(circle_phi)
-            self.phi = (2.0 * math.pi + self.phi - delta_phi) % (2.0 * math.pi)
+            self.phi = self.normalizeAngle(self.phi + delta_phi)
+        else:
+            self.pos_x += distance * math.cos(self.phi)
+            self.pos_y += distance * math.sin(self.phi)
+            self.phi = self.phi
 
     def start(self):
         self.lmotor_power = 0.0
@@ -114,12 +128,32 @@ class AizekBody(object):
 
 
 def main():
-    #controller = PIDController(0.1, 0.002, 0.005)
+    # 0.2, 0.004, 0.01
+    controller = PIDController(0.25, 0.1, 0.01)
     robot = AizekBody()
     robot.start()
-    robot.updatePosition()
+
+    robot.setGoal(0.0, 0.0, 0.75 * math.pi)
+    prev_time = time.time()
+    while abs(robot.phi) > 0.01 * math.pi:
+        lradians, rradians = robot.readVelocitySensors()
+        robot.updatePosition(lradians, rradians)
+        curr_time = time.time()
+        dt = curr_time - prev_time
+        prev_time = curr_time
+        target_linear_velocity = 0.0
+        target_angular_velocity = controller.step(-robot.phi, dt, 0.05)
+        vel_l, vel_r = uni_to_diff(target_linear_velocity, target_angular_velocity)
+        print 'dt %s, robot phi %s' % (dt, robot.phi)
+        print 'linear v %s, angular v %s' % (
+            target_linear_velocity, target_angular_velocity)
+        print 'vel_l %s, vel_r %s' % (vel_l, vel_r)
+        robot.setControl(vel_l, vel_r)
+        time.sleep(0.2)
+
     robot.stop()
+    print 'Robot x: %s, y: %s, phi: %s' % (robot.pos_x, robot.pos_y, robot.phi)
 
 
 if __name__ == '__main__':
-  main()
+    main()

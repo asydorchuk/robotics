@@ -1,4 +1,4 @@
-def PIDController(object):
+class PIDController(object):
     """Standard configurable PID controller.
 
     Embeds proportional, integral and derivative terms.
@@ -19,9 +19,11 @@ def PIDController(object):
         self.accumulated_integral = 0.0
         self.previous_value_delta = 0.0
 
-    def step(self, value_delta, time_delta):
+    def step(self, value_delta, time_delta, time_delta_threshold):
         self.accumulated_integral += value_delta * time_delta
-        derivative = (value_delta - self.previous_value_delta) / time_delta
+        derivative = 0.0
+        if time_delta > time_delta_threshold:
+            derivative = (value_delta - self.previous_value_delta) / time_delta
         value = self.proportional_factor * value_delta + \
             self.integral_factor * self.accumulated_integral + \
             self.derivative_factor * derivative
