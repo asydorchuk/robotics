@@ -59,7 +59,7 @@ class RedbotWheelEncoderSensor(object):
 
   def __init__(self, spi_interface):
     self.ticks = [0, 0, 0]
-    self.ticks_to_radians_factor = math.pi / self._TICKS_PER_WHEEL_CYCLE
+    self.ticks_to_radians_factor = 2.0 * math.pi / self._TICKS_PER_WHEEL_CYCLE
     worker = RedbotWheelEncoderThread(spi_interface, self.ticks)
     worker.start()    
 
