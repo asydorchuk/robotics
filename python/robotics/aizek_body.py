@@ -127,9 +127,21 @@ class AizekBody(object):
         return data
 
 
+def normalize_velocity(velocity, alpha=0.8):
+    if velocity >= 0.0:
+        velocity = velocity * (1.0 - alpha) + alpha
+        if velocity > 1.0:
+            velocity = 1.0
+    else:
+        velocity = velocity * (1.0 - alpha) - alpha
+        if velocity < -1.0:
+            velocity = -1.0
+    return velocity
+
+
 def main():
     # 0.2, 0.004, 0.01
-    controller = PIDController(0.25, 0.1, 0.01)
+    controller = PIDController(0.2, 0.005, 0.01)
     robot = AizekBody()
     robot.start()
 
@@ -144,12 +156,14 @@ def main():
         target_linear_velocity = 0.0
         target_angular_velocity = controller.step(-robot.phi, dt, 0.05)
         vel_l, vel_r = uni_to_diff(target_linear_velocity, target_angular_velocity)
+        vel_l = normalize_velocity(vel_l)
+        vel_r = normalize_velocity(vel_r)
         print 'dt %s, robot phi %s' % (dt, robot.phi)
         print 'linear v %s, angular v %s' % (
             target_linear_velocity, target_angular_velocity)
         print 'vel_l %s, vel_r %s' % (vel_l, vel_r)
         robot.setControl(vel_l, vel_r)
-        time.sleep(0.2)
+        time.sleep(0.1)
 
     robot.stop()
     print 'Robot x: %s, y: %s, phi: %s' % (robot.pos_x, robot.pos_y, robot.phi)

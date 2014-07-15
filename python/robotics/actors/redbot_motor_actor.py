@@ -1,7 +1,7 @@
 class RedbotMotorActor(object):
     # TODO(asydorchuk): load constants from the config file.
     
-    _MAXIMUM_FREQUENCY = 128
+    _MAXIMUM_FREQUENCY = 200
 
     def __init__(self, gpio, power_pin, direction_pin_1, direction_pin_2):
         self.gpio = gpio

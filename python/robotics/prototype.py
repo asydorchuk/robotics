@@ -16,21 +16,23 @@ def check_motors_and_encoders(spi):
 
     print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelTicksTotal()
     print 'NUmber of right wheel ticks: %s' % wencoder.getRightWheelTicksTotal()
+    print 'Number of measurements: %s' % wencoder.getMeasurmentsCount()
     print 'Let\'s workout a bit'
 
     lmotor.start()
-    lmotor.setPower(0.89)
+    lmotor.setPower(1.0)
 
     rmotor.start()
     rmotor.setPower(1.0)
 
-    time.sleep(2.0)
+    time.sleep(1.0)
 
     lmotor.stop()
     rmotor.stop()
 
-    print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelRadiansTotal()
-    print 'Number of right wheel ticks: %s' % wencoder.getRightWheelRadiansTotal()
+    print 'Number of left wheel ticks: %s' % wencoder.getLeftWheelTicksTotal()
+    print 'Number of right wheel ticks: %s' % wencoder.getRightWheelTicksTotal()
+    print 'Total measurements: %s' % wencoder.getMeasurmentsCount()
     print '\n'
 
 
