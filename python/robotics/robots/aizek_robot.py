@@ -1,12 +1,5 @@
 import math
 
-from RPi import GPIO as gpio
-
-from robotics.actors.redbot_motor_actor import RedbotMotorActor
-from robotics.interfaces.spi.mcp3008_spi_interface import MCP3008SpiInterface
-from robotics.sensors.redbot_wheel_encoder_sensor import RedbotWheelEncoderSensor
-from robotics.sensors.sharp_ir_distance_sensor import SharpIrDistanceSensor
-
 
 class AizekRobot(object):
     '''Aizek is the first generation differential wheel robot.
@@ -21,32 +14,47 @@ class AizekRobot(object):
         robot.stop()
     '''
 
-    def __init__(self):
+    def __init__(self, left_motor, right_motor, wheel_encoder,
+                 left_distance_sensor, front_distance_sensor,
+                 right_distance_sensor, wheel_radius, wheel_distance):
         """Setup hardware interfaces."""
-        gpio.setmode(gpio.BOARD)
-
-        spi = MCP3008SpiInterface(0)
-        self.lmotor = RedbotMotorActor(gpio, 8, 10, 12)
-        self.rmotor = RedbotMotorActor(gpio, 11, 13, 15)
-        self.wencoder = RedbotWheelEncoderSensor(spi)
-
-        self.lsensor = SharpIrDistanceSensor(spi, 5)
-        self.fsensor = SharpIrDistanceSensor(spi, 4)
-        self.rsensor = SharpIrDistanceSensor(spi, 3)
+        self.lmotor = left_motor
+        self.rmotor = right_motor
+        self.wencoder = wheel_encoder
+        self.lsensor = left_distance_sensor
+        self.fsensor = front_distance_sensor
+        self.rsensor = right_distance_sensor
+        self.R = wheel_radius
+        self.L = wheel_distance
 
         self.prev_lradians = self.wencoder.getLeftWheelRadiansTotal()
         self.prev_rradians = self.wencoder.getRightWheelRadiansTotal()
         self.pos_x, self.pos_y, self.phi = 0.0, 0.0, 0.0
         self.lmotor_power, self.rmotor_power = 0.0, 0.0
-        self.R = 0.032
-        self.L = 0.1
+
+    def resetPosition(self):
+        """Reset robot position to origin."""
+        self.pos_x = 0.0
+        self.pos_y = 0.0
+        self.phi = phi
+
+    def setPosition(self, x, y, phi):
+        """Set robot position.
+
+        Args:
+            x: x coordinate of the goal (in meters).
+            y: y coordinate of the goal (in meters).
+            phi: robot direction in the goal position (in radians).
+        """
+        self.pos_x = x
+        self.pos_y = y
+        self.phi = phi
 
     def setGoal(self, x, y, phi):
         """Set robot position relative to the goal position.
 
         Args:
-            x:
-        x coordinate of the goal (in meters).
+            x: x coordinate of the goal (in meters).
             y: y coordinate of the goal (in meters).
             phi: robot direction in the goal position (in radians).
         """
