@@ -1,3 +1,4 @@
+import logging
 import math
 import time
 
@@ -44,25 +45,43 @@ def main():
     robot = RobotFactory.createAizekRobot()
     robot.start()
 
-    robot.setGoal(0.0, 0.0, 0.75 * math.pi)
+    robot.setPosition(0.0, 0.0, 0.0)
     prev_time = time.time()
+    target_x = 0.5
+    target_y = 0.5
+
     while True:
+        ldistance, fdistance, rdistance = robot.readDistanceSensors()
+        print 'Distance l: %s, f: %s, r: %s' % (ldistance, fdistance, rdistance)
+
         dlradians, drradians = robot.readVelocitySensors()
         robot.updatePosition(dlradians, drradians)
         curr_time = time.time()
         dt = curr_time - prev_time
         prev_time = curr_time
-        target_linear_velocity = 0.0
-        target_angular_velocity = -robot.phi
-        #target_angular_velocity = controller.step(-robot.phi, dt, 0.05)
-        vel_l, vel_r = uni_to_power(target_linear_velocity, target_angular_velocity)
-        print 'Total radians right wheel: %s' % robot.wencoder.getRightWheelRadiansTotal()
-        print 'dt %s, robot phi %s' % (dt, robot.phi)
-        print 'vel_l %s, vel_r %s' % (vel_l, vel_r)
-        print '\n'
-        if robot.phi > -0.1:
+
+        dx = target_x - robot.pos_x
+        dy = target_y - robot.pos_y
+        if abs(dx) < 0.02 and abs(dy) < 0.02:
+            print 'Goal reached...'
             break
-        robot.setControl(vel_l, vel_r)
+
+        dphi = math.atan2(dy, dx) - robot.phi
+        if dphi > math.pi:
+            dphi -= 2 * math.pi
+        if dphi < -math.pi:
+            dphi += 2 * math.pi
+        print 'x: %s, y: %s, phi: %s' % (robot.pos_x, robot.pos_y, robot.phi)
+        print 'dx: %s, dy: %s, dphi: %s' % (dx, dy, dphi)
+
+        if abs(dphi) < 0.06 * math.pi:
+            robot.setControl(0.25, 0.25)
+        else:
+            if dphi > 0.0:
+                robot.setControl(-0.25, 0.25)
+            else:
+                robot.setControl(0.25, -0.25)
+
         time.sleep(0.1)
 
     robot.stop()
