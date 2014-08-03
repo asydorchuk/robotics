@@ -1,8 +1,8 @@
 import math
 import time
 
-from robotics.robots.aizek_robot import AizekRobot
 from robotics.controllers.pid_controller import PIDController
+from robotics.robots.factory import RobotFactory
 
 
 def uni_to_diff(v, w):
@@ -14,15 +14,15 @@ def uni_to_diff(v, w):
 
 
 def uni_to_power(v, w):
-    MX = 0.5
+    MX = 0.3
     MN = 0.4
     if v == 0.0:
         if w > 0.0:
-            power_l = -MX
+            power_l = 0.0
             power_r = MX
         else:
             power_l = MX
-            power_r = -MX
+            power_r = 0.0
     elif v > 0.0:
         if w == 0.0:
             power_l = MX
@@ -41,12 +41,12 @@ def uni_to_power(v, w):
 def main():
     # 0.2, 0.004, 0.01
     controller = PIDController(0.2, 0.005, 0.01)
-    robot = AizekRobot()
+    robot = RobotFactory.createAizekRobot()
     robot.start()
 
     robot.setGoal(0.0, 0.0, 0.75 * math.pi)
     prev_time = time.time()
-    while abs(robot.phi) > 0.01 * math.pi:
+    while True:
         dlradians, drradians = robot.readVelocitySensors()
         robot.updatePosition(dlradians, drradians)
         curr_time = time.time()
@@ -56,8 +56,12 @@ def main():
         target_angular_velocity = -robot.phi
         #target_angular_velocity = controller.step(-robot.phi, dt, 0.05)
         vel_l, vel_r = uni_to_power(target_linear_velocity, target_angular_velocity)
+        print 'Total radians right wheel: %s' % robot.wencoder.getRightWheelRadiansTotal()
         print 'dt %s, robot phi %s' % (dt, robot.phi)
         print 'vel_l %s, vel_r %s' % (vel_l, vel_r)
+        print '\n'
+        if robot.phi > -0.1:
+            break
         robot.setControl(vel_l, vel_r)
         time.sleep(0.1)
 

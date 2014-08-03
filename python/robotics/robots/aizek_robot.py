@@ -89,8 +89,9 @@ class AizekRobot(object):
 
         distance = self.R * 0.5 * (drradians + dlradians)
         dphi = self.R / self.L * (drradians - dlradians)
+        delta = abs(drradians) - abs(dlradians)
 
-        if dphi > 0.0:
+        if delta > 0.0:
             radius = abs(distance / dphi)
             circle_x = self.pos_x - radius * math.sin(self.phi)
             circle_y = self.pos_y + radius * math.cos(self.phi)
@@ -99,7 +100,7 @@ class AizekRobot(object):
             self.pos_x = circle_x + radius * math.cos(circle_phi)
             self.pos_y = circle_y + radius * math.sin(circle_phi)
             self.phi = self.normalizeAngle(self.phi + dphi)
-        elif dphi < 0.0:
+        elif delta < 0.0:
             radius = abs(distance / dphi)
             circle_x = self.pos_x + radius * math.sin(self.phi)
             circle_y = self.pos_y - radius * math.cos(self.phi)
@@ -111,7 +112,7 @@ class AizekRobot(object):
         else:
             self.pos_x += distance * math.cos(self.phi)
             self.pos_y += distance * math.sin(self.phi)
-            self.phi = self.phi
+            self.phi = self.normalizeAngle(self.phi + dphi)
 
     def start(self):
         """Start the robot motors."""
