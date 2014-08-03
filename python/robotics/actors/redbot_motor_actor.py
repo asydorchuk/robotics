@@ -1,7 +1,7 @@
 class RedbotMotorActor(object):
     # TODO(asydorchuk): load constants from the config file.
     
-    _MAXIMUM_FREQUENCY = 200
+    _MAXIMUM_FREQUENCY = 50
 
     def __init__(self, gpio, power_pin, direction_pin_1, direction_pin_2):
         self.gpio = gpio
@@ -41,5 +41,6 @@ class RedbotMotorActor(object):
             self._setDirectionBackward()
         else:
             self._setDirectionForward()
-        self.motor_controller.ChangeDutyCycle(100.0 * abs(relative_power))
+        power = int(100.0 * abs(relative_power))
+        self.motor_controller.ChangeDutyCycle(power)
         self.relative_power = relative_power

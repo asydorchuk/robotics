@@ -20,10 +20,10 @@ def check_motors_and_encoders(spi):
     print 'Let\'s workout a bit'
 
     lmotor.start()
-    lmotor.setPower(1.0)
+    lmotor.setPower(0.4)
 
     rmotor.start()
-    rmotor.setPower(1.0)
+    rmotor.setPower(0.4)
 
     time.sleep(1.0)
 

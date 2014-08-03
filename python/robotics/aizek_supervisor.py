@@ -78,9 +78,9 @@ def main():
             robot.setControl(0.25, 0.25)
         else:
             if dphi > 0.0:
-                robot.setControl(-0.25, 0.25)
+                robot.setControl(0.0, 0.25)
             else:
-                robot.setControl(0.25, -0.25)
+                robot.setControl(0.25, 0.0)
 
         time.sleep(0.1)
 

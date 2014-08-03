@@ -7,8 +7,8 @@ class RedbotWheelEncoderThread(threading.Thread):
   # TODO(asydorchuk): extract constants to the configuration file.
 
   _SENSOR_VALUE_DEFAULT = 500.0
-  _SENSOR_THRESHOLD_LOW = 350.0
-  _SENSOR_THRESHOLD_HIGH = 650.0
+  _SENSOR_THRESHOLD_LOW = 300.0
+  _SENSOR_THRESHOLD_HIGH = 700.0
   _SENSOR_STATE_UNDEF = 0
   _SENSOR_STATE_LOW = 1
   _SENSOR_STATE_HIGH = 2
@@ -35,7 +35,7 @@ class RedbotWheelEncoderThread(threading.Thread):
   def run(self):
     while True:
       lpin_value = self.reader.read(self.lpin_id)
-      self.lpin_value = lpin_value * 0.15 + self.lpin_value * 0.85
+      self.lpin_value = lpin_value * 0.33 + self.lpin_value * 0.67
       lpin_state = self._pin_state(self.lpin_value)
       if lpin_state != self._SENSOR_STATE_UNDEF:
         if self.lpin_state != lpin_state:
@@ -43,7 +43,7 @@ class RedbotWheelEncoderThread(threading.Thread):
         self.lpin_state = lpin_state
 
       rpin_value = self.reader.read(self.rpin_id)
-      self.rpin_value = rpin_value * 0.15 + self.rpin_value * 0.85
+      self.rpin_value = rpin_value * 0.33 + self.rpin_value * 0.67
       rpin_state = self._pin_state(self.rpin_value)
       if rpin_state != self._SENSOR_STATE_UNDEF:
         if self.rpin_state != rpin_state:
