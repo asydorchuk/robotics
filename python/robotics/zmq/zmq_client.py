@@ -39,7 +39,7 @@ def trigger_discovery(context, local_ip):
   log.info('Polling autobots...')
 
   pub = context.socket(zmq.PUB)
-  pub.bind('epgm://en0;239.192.1.1:5555')
+  pub.bind('epgm://{};239.192.1.1:5555'.format(local_ip))
 
   rep = context.socket(zmq.REP)
   rep.bind('tcp://{}:5556'.format(local_ip))

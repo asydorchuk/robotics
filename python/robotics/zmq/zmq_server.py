@@ -39,7 +39,7 @@ def run_zmq_server(robot):
     local_control_address = '{}:5557'.format(local_ip)
 
     discovery_sub = context.socket(zmq.SUB)
-    discovery_sub.connect('epgm://wlan0;239.192.1.1:5555')
+    discovery_sub.connect('epgm://{};239.192.1.1:5555'.format(local_ip))
     discovery_sub.setsockopt(zmq.SUBSCRIBE, TOPIC_DISCOVERY)
 
     control_rep = context.socket(zmq.REP)
