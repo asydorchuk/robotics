@@ -25,124 +25,127 @@ COMMAND_DISCONNECT = 'DISCONNECT'
 
 
 def readch():
-  fd = sys.stdin.fileno()
-  old_settings = termios.tcgetattr(fd)
-  try:
-    tty.setraw(sys.stdin.fileno())
-    ch = sys.stdin.read(1)
-  finally:
-    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-  return ch
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(sys.stdin.fileno())
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
 
 
 def trigger_discovery(context, local_ip):
-  log.info('Polling autobots...')
+    log.info('Polling autobots...')
 
-  pub = context.socket(zmq.PUB)
-  pub.bind('epgm://{};239.192.1.1:5555'.format(local_ip))
+    pub = context.socket(zmq.PUB)
+    pub.bind('epgm://{};239.192.1.1:5555'.format(local_ip))
 
-  rep = context.socket(zmq.REP)
-  rep.bind('tcp://{}:5556'.format(local_ip))
+    rep = context.socket(zmq.REP)
+    rep.bind('tcp://{}:5556'.format(local_ip))
 
-  poller = zmq.Poller()
-  poller.register(rep, zmq.POLLIN)
+    poller = zmq.Poller()
+    poller.register(rep, zmq.POLLIN)
 
-  autobots = {}
-  for i in xrange(0, 5):
-    if len(autobots) == 0:
-      pub.send_multipart([TOPIC_DISCOVERY, COMMAND_ANYBODY_HOME, '{}:5556'.format(local_ip)])
+    autobots = {}
+    for i in xrange(0, 5):
+        if len(autobots) == 0:
+            pub.send_multipart(
+                [TOPIC_DISCOVERY, COMMAND_ANYBODY_HOME, '{}:5556'.format(local_ip)])
 
-    try:
-      socks = dict(poller.poll(1000))
-    except KeyboardInterrupt:
-      break
+        try:
+            socks = dict(poller.poll(1000))
+        except KeyboardInterrupt:
+            break
 
-    if rep in socks:
-      command, device, address = rep.recv_multipart()
-      rep.send_multipart([command, 'ACKNOWLEDGED'])
-      log.info('Received command {} from device {} at address {}'.format(command, device, address))
-      autobots[device] = address
+        if rep in socks:
+            command, device, address = rep.recv_multipart()
+            rep.send_multipart([command, 'ACKNOWLEDGED'])
+            log.info('Received command {} from device {} at address {}'.format(
+                command, device, address))
+            autobots[device] = address
 
-  rep.close()
-  pub.close()
-  return autobots
+    rep.close()
+    pub.close()
+    return autobots
 
 
 def take_control(context, name, remote_control_address):
-  log.info('Taking control over autobot {} at {}'.format(
-      name, remote_control_address))
-  req = context.socket(zmq.REQ)
-  req.connect('tcp://{}'.format(remote_control_address))
+    log.info('Taking control over autobot {} at {}'.format(
+        name, remote_control_address))
+    req = context.socket(zmq.REQ)
+    req.connect('tcp://{}'.format(remote_control_address))
 
-  while True:
-    instruction = readch().upper()
-    log.info('Sending instruction {}'.format(instruction))
-    if instruction == 'Q':
-      req.send_multipart([CONTROL_CENTER_ID, COMMAND_DISCONNECT, ''])  
-    else:
-      req.send_multipart([CONTROL_CENTER_ID, COMMAND_INSTRUCTION, instruction])
-    status, message = req.recv_multipart()
-    log.info('Instruction result: {} status: {} message: {}'.format(
-      instruction, status, message))
-    if instruction == 'Q':
-      break
+    while True:
+        instruction = readch().upper()
+        log.info('Sending instruction {}'.format(instruction))
+        if instruction == 'Q':
+            req.send_multipart([CONTROL_CENTER_ID, COMMAND_DISCONNECT, ''])
+        else:
+            req.send_multipart(
+                [CONTROL_CENTER_ID, COMMAND_INSTRUCTION, instruction])
+        status, message = req.recv_multipart()
+        log.info('Instruction result: {} status: {} message: {}'.format(
+            instruction, status, message))
+        if instruction == 'Q':
+            break
 
-  req.close()
+    req.close()
 
 
 def main():
-  context = zmq.Context()
-  local_ip = socket.gethostbyname(socket.gethostname())
+    context = zmq.Context()
+    local_ip = socket.gethostbyname(socket.gethostname())
 
-  while True:
-    print '------------------------------------------'
-    print '| Choose your destiny (press q to quit): |'
-    print '| 1. Discover autobots.                  |'
-    print '------------------------------------------' 
-    option = readch()
-    print ''
-    if option == '1':
-      autobots = trigger_discovery(context, local_ip)
-      log.info('Discovered autobots: %s', autobots)
-
-      while True:
-        names = autobots.keys()
-
-        if len(names) == 0:
-          print 'No autobots found'
-          print ''
-          break
-
-        print 'Pick autobot (press q to return to the previous menu)'
-        for idx, autobot in enumerate(names, start=1):
-          print '{}. {}'.format(idx, autobot)
+    while True:
+        print '------------------------------------------'
+        print '| Choose your destiny (press q to quit): |'
+        print '| 1. Discover autobots.                  |'
+        print '------------------------------------------'
         option = readch()
         print ''
-        if option == 'q':
-          break
+        if option == '1':
+            autobots = trigger_discovery(context, local_ip)
+            log.info('Discovered autobots: %s', autobots)
 
-        try:
-          idx = int(option) - 1
-        except ValueError:
-          print 'Wrong option'
-          print ''
-          continue
-        if idx >= 0 and idx < len(names):
-          name = names[idx]
-          address = autobots[name]
-          take_control(context, name, address)
+            while True:
+                names = autobots.keys()
+
+                if len(names) == 0:
+                    print 'No autobots found'
+                    print ''
+                    break
+
+                print 'Pick autobot (press q to return to the previous menu)'
+                for idx, autobot in enumerate(names, start=1):
+                    print '{}. {}'.format(idx, autobot)
+                option = readch()
+                print ''
+                if option == 'q':
+                    break
+
+                try:
+                    idx = int(option) - 1
+                except ValueError:
+                    print 'Wrong option'
+                    print ''
+                    continue
+                if idx >= 0 and idx < len(names):
+                    name = names[idx]
+                    address = autobots[name]
+                    take_control(context, name, address)
+                else:
+                    print 'Wrong option'
+                    print ''
+                    continue
+        elif option == 'q':
+            break
         else:
-          print 'Wrong option'
-          print ''
-          continue
-    elif option == 'q':
-      break
-    else:
-      print 'Wrong option'
-      print ''
-      continue
+            print 'Wrong option'
+            print ''
+            continue
 
-  context.term()
+    context.term()
 
 if __name__ == '__main__':
-  main()
+    main()

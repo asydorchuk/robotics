@@ -87,23 +87,29 @@ def run_zmq_server(robot):
             log.info('Received command: {} from control center: {} with instruction: {}'.format(
                 command, cc_id, instruction))
             if active_cc_id and active_cc_id != cc_id:
-                control_rep.send_multipart([LCOMMAND_STATUS_FAILURE, 'Command rejected: protocol violation'])
+                control_rep.send_multipart(
+                    [LCOMMAND_STATUS_FAILURE, 'Command rejected: protocol violation'])
             else:
                 state = STATE_RECEIVING
                 active_cc_id = cc_id
                 last_req_time = dt.now()
                 if command == RCOMMAND_OBEY:
-                    control_rep.send_multipart([LCOMMAND_STATUS_SUCCESS, 'Control granted'])
+                    control_rep.send_multipart(
+                        [LCOMMAND_STATUS_SUCCESS, 'Control granted'])
                 elif command == RCOMMAND_PING:
-                    control_rep.send_multipart([LCOMMAND_STATUS_SUCCESS, 'Ping received'])
+                    control_rep.send_multipart(
+                        [LCOMMAND_STATUS_SUCCESS, 'Ping received'])
                 elif command == RCOMMAND_INSTRUCTION:
-                    control_rep.send_multipart([LCOMMAND_STATUS_SUCCESS, 'Roger that'])
+                    control_rep.send_multipart(
+                        [LCOMMAND_STATUS_SUCCESS, 'Roger that'])
                 elif command == RCOMMAND_DISCONNECT:
                     state = STATE_DISCOVERY
                     active_cc_id = None
-                    control_rep.send_multipart([LCOMMAND_STATUS_SUCCESS, 'Control released'])
+                    control_rep.send_multipart(
+                        [LCOMMAND_STATUS_SUCCESS, 'Control released'])
                 else:
-                    control_rep.send_multipart([LCOMMAND_STATUS_FAILURE, 'Unknown command: {}'.format(command)])
+                    control_rep.send_multipart(
+                        [LCOMMAND_STATUS_FAILURE, 'Unknown command: {}'.format(command)])
 
     control_rep.close()
     discovery_sub.close()
