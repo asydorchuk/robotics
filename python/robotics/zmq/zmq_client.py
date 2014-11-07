@@ -106,15 +106,21 @@ def main():
       log.info('Discovered autobots: %s', autobots)
 
       while True:
-        print 'Pick autobot (press q to return to the previous menu)'
         names = autobots.keys()
+
+        if len(names) == 0:
+          print 'No autobots found'
+          print ''
+          break
+
+        print 'Pick autobot (press q to return to the previous menu)'
         for idx, autobot in enumerate(names, start=1):
           print '{}. {}'.format(idx, autobot)
-
         option = readch()
         print ''
         if option == 'q':
           break
+
         try:
           idx = int(option) - 1
         except ValueError:
