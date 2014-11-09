@@ -1,6 +1,6 @@
 from robotics.robots.factory import RobotFactory
-from robotics.robots.proxy import AizekProxy
-from zmq import zmq_server
+from robotics.robots.aizek_proxy import AizekProxy
+from robotics.zmq import zmq_server
 
 
 def main():

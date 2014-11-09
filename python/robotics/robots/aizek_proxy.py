@@ -1,9 +1,10 @@
+
 import json
 
 
 class AizekProxy(object):
 
-    INTSTRUCTION_TO_POWER = {
+    INSTRUCTION_TO_POWER = {
         'FORWARD': (0.6, 0.6),
         'FORWARD_LEFT': (0.4, 0.6),
         'FORWARD_RIGHT': (0.6, 0.4),
@@ -19,8 +20,9 @@ class AizekProxy(object):
         self.robot = robot
 
     def execInstruction(self, instruction):
-        instruction = json.loads(instruction)
-        itype, idetails = instruction['type'], instruction['details']
+        #instruction = json.loads(instruction)
+        #itype, idetails = instruction['type'], instruction['details']
+        itype = instruction
 
         power = self.INSTRUCTION_TO_POWER.get(itype, None)
         if power is None:

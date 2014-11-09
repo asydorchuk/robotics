@@ -31,7 +31,7 @@ CHAR_TO_INSTRUCTION_MAP = {
     'X': 'BACKWARD',
     'Z': 'BACKWARD_LEFT',
     'C': 'BACKWARD_RIGHT',
-    'A'; 'LEFT_ROTATION',
+    'A': 'LEFT_ROTATION',
     'D': 'RIGHT_ROTATION',
     'S': 'STOP',    
 }
@@ -95,7 +95,7 @@ def take_control(context, name, remote_control_address):
         log.info('Preseed {}. Sending instruction {}'.format(ch, instruction))
         if instruction is None:
             req.send_multipart([CONTROL_CENTER_ID, COMMAND_DISCONNECT, ''])
-        elif:
+        else:
             req.send_multipart(
                 [CONTROL_CENTER_ID, COMMAND_INSTRUCTION, instruction])
         status, message = req.recv_multipart()
