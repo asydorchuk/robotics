@@ -45,18 +45,18 @@ def main():
             print [cx, cy]
             cv2.rectangle(gray, (x,y), (x+w,y+h), (255,0,0), 2)
             if cy > cheight * 0.7 or min(w, h) < 25:
-                robot.setControl(0.6, 0.6)
+                robot.setPower(0.6, 0.6)
                 time.sleep(0.2)
             elif cy < cheight * 0.3 or min(w, h) > 32:
-                robot.setControl(-0.6, -0.6)
+                robot.setPower(-0.6, -0.6)
                 time.sleep(0.2)
             elif cx < cwidth * 0.4:
-                robot.setControl(0.6, -0.6)
+                robot.setPower(0.6, -0.6)
                 time.sleep(0.2)
             elif cx > cwidth * 0.6:
-                robot.setControl(-0.6, 0.6)
+                robot.setPower(-0.6, 0.6)
                 time.sleep(0.2)
-            robot.setControl(0.0, 0.0)
+            robot.setPower(0.0, 0.0)
 
     camera.stop_preview()
     carera.close()

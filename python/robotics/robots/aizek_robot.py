@@ -9,7 +9,7 @@ class AizekRobot(object):
     Example usage:
         robot = AizekRobot()
         robot.start()
-        robot.setControl(0.6, 0.6)
+        robot.setPower(0.6, 0.6)
         time.sleep(0.5)
         robot.stop()
     '''
@@ -128,7 +128,7 @@ class AizekRobot(object):
         self.rmotor_power = 0.0
         self.rmotor.stop()
 
-    def setControl(self, lmotor_power, rmotor_power):
+    def setPower(self, lmotor_power, rmotor_power):
         """Set power supplied onto robot motors.
 
         Args:

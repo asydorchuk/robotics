@@ -75,12 +75,12 @@ def main():
         print 'dx: %s, dy: %s, dphi: %s' % (dx, dy, dphi)
 
         if abs(dphi) < 0.06 * math.pi:
-            robot.setControl(0.25, 0.25)
+            robot.setPower(0.25, 0.25)
         else:
             if dphi > 0.0:
-                robot.setControl(0.0, 0.25)
+                robot.setPower(0.0, 0.25)
             else:
-                robot.setControl(0.25, 0.0)
+                robot.setPower(0.25, 0.0)
 
         time.sleep(0.1)
 
