@@ -100,8 +100,11 @@ def run_zmq_server(robot):
                     control_rep.send_multipart(
                         [LCOMMAND_STATUS_SUCCESS, 'Ping received'])
                 elif command == RCOMMAND_INSTRUCTION:
+                    message = 'Negative'
+                    if robot and robot.execInstruction(instruction):
+                        message = 'Roger that'
                     control_rep.send_multipart(
-                        [LCOMMAND_STATUS_SUCCESS, 'Roger that'])
+                        [LCOMMAND_STATUS_SUCCESS, message])
                 elif command == RCOMMAND_DISCONNECT:
                     state = STATE_DISCOVERY
                     active_cc_id = None

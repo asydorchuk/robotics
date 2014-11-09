@@ -23,6 +23,19 @@ COMMAND_ANYBODY_HOME = 'AHOME'
 COMMAND_INSTRUCTION = 'INSTRUCTION'
 COMMAND_DISCONNECT = 'DISCONNECT'
 
+# Char to intrsuction map.
+CHAR_TO_INSTRUCTION_MAP = {
+    'W': 'FORWARD',
+    'Q': 'FORWARD_LEFT',
+    'E': 'FORWARD_RIGHT',
+    'X': 'BACKWARD',
+    'Z': 'BACKWARD_LEFT',
+    'C': 'BACKWARD_RIGHT',
+    'A'; 'LEFT_ROTATION',
+    'D': 'RIGHT_ROTATION',
+    'S': 'STOP',    
+}
+
 
 def readch():
     fd = sys.stdin.fileno()
@@ -77,17 +90,18 @@ def take_control(context, name, remote_control_address):
     req.connect('tcp://{}'.format(remote_control_address))
 
     while True:
-        instruction = readch().upper()
-        log.info('Sending instruction {}'.format(instruction))
-        if instruction == 'Q':
+        ch = readch().upper()
+        instruction = CHAR_TO_INSTRUCTION_MAP.get(ch, None)
+        log.info('Preseed {}. Sending instruction {}'.format(ch, instruction))
+        if instruction is None:
             req.send_multipart([CONTROL_CENTER_ID, COMMAND_DISCONNECT, ''])
-        else:
+        elif:
             req.send_multipart(
                 [CONTROL_CENTER_ID, COMMAND_INSTRUCTION, instruction])
         status, message = req.recv_multipart()
         log.info('Instruction result: {} status: {} message: {}'.format(
             instruction, status, message))
-        if instruction == 'Q':
+        if instruction is None:
             break
 
     req.close()
