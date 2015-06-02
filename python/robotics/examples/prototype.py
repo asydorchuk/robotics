@@ -2,10 +2,10 @@ import time
 
 from RPi import GPIO as gpio
 
-from actors.redbot_motor_actor import RedbotMotorActor
-from interfaces.spi.mcp3008_spi_interface import MCP3008SpiInterface
-from sensors.redbot_wheel_encoder_sensor import RedbotWheelEncoderSensor
-from sensors.sharp_ir_distance_sensor import SharpIrDistanceSensor
+from robotics.actors.redbot_motor_actor import RedbotMotorActor
+from robotics.interfaces.spi.mcp3008_spi_interface import MCP3008SpiInterface
+from robotics.sensors.redbot_wheel_encoder_sensor import RedbotWheelEncoderSensor
+from robotics.sensors.sharp_ir_distance_sensor import SharpIrDistanceSensor
 
 
 def check_motors_and_encoders(spi):
